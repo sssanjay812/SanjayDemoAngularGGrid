@@ -1,0 +1,129 @@
+﻿<div>
+    <!--Filter-->
+    <div class="input-group col-md-12 filter">
+        <span class="input-group-addon">
+            <i class="glyphicon glyphicon-search"></i>
+        </span>
+
+        <input class="form-control filter-input" type="text" ng-keydown="SanjayCtrl.filterChanged()" ng-model="SanjayCtrl.filterText" placeholder="Search...">
+
+        <span class="input-group-addon btn btn-default" ng-click="SanjayCtrl.clearFilter()" ng-hide="SanjayCtrl.filter.length == 0">
+            <i class="glyphicon glyphicon-remove"></i>
+        </span>
+    </div>
+    
+    <!--Grid-->
+    <table class="table table-condensed table-hover table-striped table-bordered crud-grid" ng-hide="SanjayCtrl.loading">
+        <!-- HEADER-->
+        <thead>
+            <tr>
+                <!--Buttons column-->
+                <th class="header column-width-auto text-center">
+                    <!--Add + Cancel-->
+                    <i class="btn btn-sm btn-grid glyphicon glyphicon-plus" ng-click="SanjayCtrl.toggleAddMode()" title="Add" ng-hide="SanjayCtrl.addMode"></i>
+                    <i class="btn btn-sm btn-grid glyphicon glyphicon-minus" ng-click="SanjayCtrl.toggleAddMode()" title="Cancel" ng-show="SanjayCtrl.addMode"></i>
+                </th>
+
+                <!-- Content headers-->
+                <th ng-repeat="column in SanjayCtrl.columnsDefinition"
+                    ng-hide="column.hidden"
+                    style="vertical-align:middle; cursor: pointer"
+                    class="header"
+                    ng-class="column.class">
+                    <div ng-click="SanjayCtrl.setOrderByColumn(column.binding)">
+                        {{column.header}}
+                        <i class="glyphicon"
+                           ng-class="{
+                       'glyphicon glyphicon-arrow-up'   : !SanjayCtrl.orderByReverse,
+                       'glyphicon glyphicon-arrow-down' : SanjayCtrl.orderByReverse
+                       }"
+                           ng-show="SanjayCtrl.orderByColumn == column.binding"></i>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+
+        <!--BODY-->
+        <tbody>
+            <!--Row with the new item-->
+            <tr ng-if="SanjayCtrl.addMode">
+
+                <!--New item: Buttons column-->
+                <td class="add-item">
+                    <!--Create + Cancel-->
+                    <i class="btn btn-sm btn-grid glyphicon glyphicon-floppy-disk" ng-click="SanjayCtrl.createItem(SanjayCtrl.newItem)" title="Create" ng-disabled="SanjayCtrl.newItem.hasErrors"></i>
+                    <i class="btn btn-sm btn-grid glyphicon glyphicon-remove" ng-click="SanjayCtrl.toggleAddMode()" title="Cancel"></i>
+                </td>
+
+                <!-- New item: Content columns-->
+                <td ng-repeat="column in SanjayCtrl.columnsDefinition" ng-hide="column.hidden" class="add-item">
+
+                    <!--Show cell editor control for each column-->
+                    <div cell-editor
+                         item="SanjayCtrl.newItem"
+                         column="column"
+                         key-up-event="SanjayCtrl.createModeKeyUp">
+                    </div>
+                </td>
+            </tr>
+
+            <!--Content-->
+            <tr ng-repeat="knownItem in SanjayCtrl.CompleteItems | filter:SanjayCtrl.filter">
+
+                <!--Edit/Delete buttons-->
+                <td>
+                    <!--Edit + Delete  -->
+                    <div ng-show="knownItem.editMode == null || knownItem.editMode == false">
+                        <i class="btn btn-sm btn-grid glyphicon glyphicon-edit" ng-click="SanjayCtrl.toggleEditMode(knownItem)" title="Edit"></i>
+                        <i class="btn btn-sm btn-grid glyphicon glyphicon-trash" ng-click="SanjayCtrl.deleteItemWithConfirmation(knownItem)" title="Delete"></i>
+                    </div>
+
+                    <!--Save + Cancel -->
+                    <div ng-show="knownItem.editMode">
+                        <i class="btn btn-sm btn-grid glyphicon glyphicon-floppy-disk" ng-click="SanjayCtrl.updateItem(knownItem)" title="Save" ng-disabled="knownItem.hasErrors"></i>
+                        <i class="btn btn-sm btn-grid glyphicon glyphicon-remove" ng-click="SanjayCtrl.toggleEditMode(knownItem)" title="Cancel"></i>
+                    </div>
+
+                </td>
+
+                <!-- Content columns-->
+                <td ng-repeat="column in SanjayCtrl.columnsDefinition" ng-hide="column.hidden">
+
+                    <!--Read mode-->
+                    <span ng-show="knownItem.editMode == null || knownItem.editMode == false" ng-dblclick="SanjayCtrl.toggleEditMode(knownItem)">
+                        <!-- Each item as an array property / value, header is the value that this column display-->
+                        <span ng-switch="column.type">
+                            <!-- Text -->
+                            <span ng-switch-default>{{knownItem[column.binding]}}</span>
+                            <!-- Date -->
+                            <span ng-switch-when="date">{{knownItem[column.binding]| date:'fullDate'}}</span>
+                            <!-- Button -->
+                            <span ng-switch-when="button">
+                                <div class="btn-group ">
+                                    <i ng-class="column.icon" ng-click="SanjayCtrl.notifyColumnClick(column.buttonid, knownItem)"></i>
+                                </div>
+                            </span>
+                        </span>
+                    </span>
+
+                    <!--Show cell editor control for each column-->
+                    <div ng-show="knownItem.editMode"
+                         cell-editor
+                         item="knownItem"
+                         column="column"
+                         key-up-event="SanjayCtrl.updateModeKeyUp">
+                        <!--updateModeKeyUp has no parenthesis to pass parameters-->
+                    </div>
+
+                </td>
+
+            </tr>
+        </tbody>
+
+    </table>
+
+
+    <!--Loading indicator-->
+    <img src="/images/loading.gif" ng-show="SanjayCtrl.loading" class="center-block" title="Loading..." style="margin-top: 20px" />
+
+</div>

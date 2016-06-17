@@ -1,0 +1,37 @@
+﻿<div>
+    <h1>
+        <i class="" style="vertical-align: middle"></i>
+               <small>
+                   Total Items in Grid
+            ({{SanjayCtrl.gridController.CompleteItems.length}})
+            Sanjay Demo
+        </small>
+    </h1>
+
+    <div crud-grid
+         column-button-click='SanjayCtrl.gridOnButtonClick'
+         initialized='SanjayCtrl.gridOnInitialized'
+         server-url='{{SanjayCtrl.serverUrl}}'
+         columns-definition='[
+         {
+            "binding"       :"id",
+            "type"          :"text",
+            "required"      :"true",
+            "hidden"        :"true"
+         },
+         {
+            "binding"       :"name",
+            "header"        :"FirstName",
+            "type"          :"text",
+            "required"      :"true"
+         },
+         {
+            "binding"       :"Desc",
+            "header"        :"LastName",
+            "type"          :"text",
+            "required"      :"false"
+         }
+        
+         ]'>
+    </div>
+</div>
